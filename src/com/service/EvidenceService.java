@@ -1,6 +1,7 @@
 package com.service;
 
 import java.io.IOException;
+import java.util.List;
 
 import com.dao.EvidenceDAO;
 import com.exception.DuplicateEvidenceException;
@@ -12,32 +13,21 @@ public class EvidenceService {
 
     private EvidenceDAO evidenceDAO;
 
-    public EvidenceService(
-            EvidenceDAO evidenceDAO) {
-
+    public EvidenceService(EvidenceDAO evidenceDAO) {
         this.evidenceDAO = evidenceDAO;
     }
 
-    public void uploadEvidence(
-            Evidence evidence)
+    public void uploadEvidence(Evidence evidence)
             throws DuplicateEvidenceException {
 
-        if (evidenceDAO.findBy(
-                evidence.getEvidenceId()) != null) {
-
+        if (evidenceDAO.findBy(evidence.getEvidenceId()) != null) {
             throw new DuplicateEvidenceException(
                     "Evidence ID already exists: "
                     + evidence.getEvidenceId()
             );
         }
 
-        /*
-         * Generate SHA-256 hash
-         * only when a valid file path is provided.
-         */
-
         try {
-
             String hash =
                     HashUtil.generateSHA256(
                             evidence.getFilePath()
@@ -49,15 +39,9 @@ public class EvidenceService {
             System.out.println(
                     "SHA-256 Hash Generated:"
             );
-
             System.out.println(hash);
 
         } catch (IOException e) {
-
-            /*
-             * For now, don't stop the upload
-             * if the file cannot be accessed.
-             */
 
             evidence.setHash(
                     "HASH_NOT_GENERATED"
@@ -81,17 +65,17 @@ public class EvidenceService {
         );
     }
 
-    public Evidence getEvidenceById(
-            int evidenceId)
+    public List<Evidence> getAllEvidence() {
+        return evidenceDAO.getAll();
+    }
+
+    public Evidence getEvidenceById(int evidenceId)
             throws EvidenceNotFoundException {
 
         Evidence evidence =
-                evidenceDAO.findBy(
-                        evidenceId
-                );
+                evidenceDAO.findBy(evidenceId);
 
         if (evidence == null) {
-
             throw new EvidenceNotFoundException(
                     "Evidence not found with ID: "
                     + evidenceId
@@ -101,20 +85,15 @@ public class EvidenceService {
         return evidence;
     }
 
-    public void deleteEvidence(
-            int evidenceId)
+    public void deleteEvidence(int evidenceId)
             throws EvidenceNotFoundException {
 
         Evidence evidence =
-                evidenceDAO.findBy(
-                        evidenceId
-                );
+                evidenceDAO.findBy(evidenceId);
 
         if (evidence == null) {
-
             throw new EvidenceNotFoundException(
-                    "Cannot delete. Evidence not found "
-                    + "with ID: "
+                    "Cannot delete. Evidence not found with ID: "
                     + evidenceId
             );
         }
@@ -126,15 +105,13 @@ public class EvidenceService {
         );
     }
 
-    public boolean verifyEvidence(
-            int evidenceId)
+    public boolean verifyEvidence(int evidenceId)
             throws EvidenceNotFoundException {
 
         Evidence evidence =
                 getEvidenceById(evidenceId);
 
         try {
-
             String currentHash =
                     HashUtil.generateSHA256(
                             evidence.getFilePath()

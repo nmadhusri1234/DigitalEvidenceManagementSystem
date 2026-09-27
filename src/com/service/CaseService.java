@@ -1,5 +1,7 @@
 package com.service;
 
+import java.util.List;
+
 import com.dao.CaseDAO;
 import com.exception.DuplicateCaseException;
 import com.exception.CaseNotFoundException;
@@ -17,7 +19,6 @@ public class CaseService {
             throws DuplicateCaseException {
 
         if (caseDAO.findBy(caseObject.getCaseId()) != null) {
-
             throw new DuplicateCaseException(
                     "Case ID already exists: "
                     + caseObject.getCaseId()
@@ -31,13 +32,16 @@ public class CaseService {
         );
     }
 
+    public List<Case> getAllCases() {
+        return caseDAO.getAll();
+    }
+
     public Case getCaseById(int caseId)
             throws CaseNotFoundException {
 
         Case caseObject = caseDAO.findBy(caseId);
 
         if (caseObject == null) {
-
             throw new CaseNotFoundException(
                     "Case not found with ID: "
                     + caseId
@@ -53,7 +57,6 @@ public class CaseService {
         Case caseObject = caseDAO.findBy(caseId);
 
         if (caseObject == null) {
-
             throw new CaseNotFoundException(
                     "Cannot delete. Case not found with ID: "
                     + caseId
