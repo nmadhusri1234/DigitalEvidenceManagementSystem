@@ -8,31 +8,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Scanner;
 
-import com.dao.AuditDAO;
-import com.dao.CaseDAO;
-import com.dao.EvidenceDAO;
-import com.dao.UserDAO;
-
-import com.exception.CaseNotFoundException;
-import com.exception.DuplicateCaseException;
-import com.exception.DuplicateEvidenceException;
-import com.exception.DuplicateUserException;
-import com.exception.EvidenceNotFoundException;
-import com.exception.InvalidLoginException;
-
-import com.model.Case;
-import com.model.CaseStatus;
-import com.model.Evidence;
-import com.model.EvidenceType;
-import com.model.Role;
-import com.model.User;
-
-import com.service.AuditService;
-import com.service.AuthenticationService;
-import com.service.AuthorizationService;
-import com.service.CaseService;
-import com.service.EvidenceService;
-import com.service.UserService;
+import com.dao.*;
+import com.exception.*;
+import com.model.*;
+import com.service.*;
 
 import com.util.FileStorageUtil;
 
@@ -42,6 +21,12 @@ public class Main {
     // CONSOLE COLORS
     // =========================================================
 
+	//ANSI escape codes
+	//\033 → Escape character (starts the ANSI command)
+	//The [ starts the ANSI formatting command.
+	//[31 → 31 means red
+	//m → applies the formatting
+	
     private static final String RESET = "\033[0m";
     private static final String BOLD = "\033[1m";
     private static final String RED = "\033[31m";
@@ -51,6 +36,7 @@ public class Main {
     private static final String MAGENTA = "\033[35m";
     private static final String CYAN = "\033[36m";
 
+    //used for persistent storage.instead of database,storing the objects in .dat files.
     private static final String USER_FILE = "data/users.dat";
     private static final String CASE_FILE = "data/cases.dat";
     private static final String EVIDENCE_FILE = "data/evidence.dat";
@@ -62,6 +48,8 @@ public class Main {
         System.out.println(CYAN + BOLD + "======================================" + RESET);
     }
 
+    //helper methods for printing
+    //instead of repeatedly writing those print statements these methods are used
     private static void printSection(String title) {
         System.out.println();
         System.out.println(BLUE + BOLD + "----------- " + title + " -----------" + RESET);
@@ -75,6 +63,8 @@ public class Main {
         System.out.print(YELLOW + prompt + RESET);
     }
 
+    //prints the message in green
+    //reset is important because it returns the console back to normal formatting
     private static void printSuccess(String message) {
         System.out.println(GREEN + message + RESET);
     }
@@ -91,11 +81,13 @@ public class Main {
 
         Scanner scanner = new Scanner(System.in);
 
+        //create dao objects
         UserDAO userDAO = new UserDAO();
         CaseDAO caseDAO = new CaseDAO();
         EvidenceDAO evidenceDAO = new EvidenceDAO();
         AuditDAO auditDAO = new AuditDAO();
 
+        //create service objects and passing DAO objects into service objects
         UserService userService =
                 new UserService(userDAO);
 
@@ -105,9 +97,15 @@ public class Main {
         EvidenceService evidenceService =
                 new EvidenceService(evidenceDAO);
 
+        //who is user? are username password correct?
         AuthenticationService authenticationService =
                 new AuthenticationService(userDAO);
 
+//
+//        What role does this user have?
+//        		ADMIN?
+//        		INVESTIGATOR?
+//        		AUDITOR?
         AuthorizationService authorizationService =
                 new AuthorizationService();
 
@@ -116,10 +114,12 @@ public class Main {
 
         try {
 
+        	//this makes sure the data directory exists
             Files.createDirectories(
                     Paths.get("data")
             );
 
+            //loads previously saved data
             loadData(
                     userDAO,
                     caseDAO,

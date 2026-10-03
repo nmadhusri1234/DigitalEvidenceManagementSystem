@@ -1,0 +1,54 @@
+I separated my project into Model, DAO, Service, Exception and Utility layers. The Main class imports these layers and coordinates them
+Instead of repeating formatting code everywhere, I created reusable methods. This improves code readability and reduces duplication
+Main acts as the entry point and coordinator of the application
+
+DAO = Data Access Object
+
+DAO is a design pattern used to separate data-access code from the rest of the application.
+
+UserDAO → manages users
+CaseDAO → manages cases
+EvidenceDAO → manages evidence
+AuditDAO → manages audit records
+
+Main class creates these DAO objects and passes them to the service classes.
+
+DAO is an object/class that provides methods to access and manage application data.
+
+Data
+
+The actual information in your application:
+
+User
+Case
+Evidence
+Audit
+
+For example:
+
+User:
+userId
+userName
+email
+role
+password
+
+
+Access
+
+Your program needs operations such as:
+
+add user
+get users
+find user
+delete user
+
+
+Object
+
+In Java, that responsibility is implemented using a class/object.
+
+For example:
+
+UserDAO userDAO = new UserDAO();
+
