@@ -220,6 +220,7 @@ public class Main {
     // LOGIN
     // =========================================================
 
+    //inside login,user enters username and password
     private static void login(
             Scanner scanner,
             AuthenticationService authenticationService,
